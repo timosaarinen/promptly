@@ -1,0 +1,113 @@
+{
+  "name": "promptly",
+  "productName": "Promptly",
+  "version": "0.2.0",
+  "description": "Desktop tool for crafting LLM prompts with codebase context.",
+  "author": {
+    "name": "Timo Saarinen",
+    "url": "https://github.com/timosaarinen"
+  },
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/main/main.js",
+  "scripts": {
+    "prod": "npm run build:main && npm run build:renderer && electron .",
+    "dev": "concurrently \"npm:vite:dev\" \"npm:electron:watch\"",
+    "build": "npm run build:main && npm run build:renderer && npm run generate:icons && electron-builder",
+    "build:main": "tsc -p shared && esbuild electron/main.ts --bundle --outfile=dist/main/main.js --platform=node --format=cjs --external:electron --external:fsevents --sourcemap && esbuild electron/preload.ts --bundle --outfile=dist/main/preload.js --platform=node --format=cjs --external:electron --external:fsevents --sourcemap && node -e \"require('fs').copyFileSync('package.electron.json','dist/main/package.json')\"",
+    "build:renderer": "vite build",
+    "preview": "vite preview",
+    "vite:dev": "vite --port 3042",
+    "typecheck": "tsc -b",
+    "typecheck:electron": "tsc -p electron --noEmit",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "electron:watch": "npm run build:main && cross-env VITE_DEV_SERVER_URL=http://localhost:3042 electron . --wait-vite",
+    "generate:icons": "node scripts/generate-icons.js"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "clsx": "^2.1.0",
+    "diff": "^8.0.1",
+    "electron-store": "^8.1.0",
+    "gpt-tokenizer": "^2.1.2",
+    "ignore": "^7.0.4",
+    "jotai": "^2.6.0",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.309.0",
+    "micromatch": "^4.0.8",
+    "path-browserify": "^1.0.1",
+    "prismjs": "^1.29.0",
+    "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-diff-viewer-continued": "^3.3.1",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.0",
+    "tailwind-merge": "^2.2.0",
+    "tiktoken": "^1.0.13",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.13",
+    "@types/lodash": "^4.17.17",
+    "@types/micromatch": "^4.0.9",
+    "@types/node": "^20.10.5",
+    "@types/prismjs": "^1.26.3",
+    "@types/react": "^18.2.43",
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "esbuild": "^0.20.0",
+    "png2icons": "^2.0.1",
+    "postcss": "^8.4.32",
+    "prettier": "^3.5.3",
+    "sharp": "^0.34.1",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.1.4"
+  },
+  "build": {
+    "appId": "net.tsaari42.promptly",
+    "productName": "Promptly",
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "!node_modules/**/*",
+      "node_modules/tiktoken/**/*",
+      "!**/*.tsbuildinfo",
+      "!**/*.d.ts.map",
+      "!**/*.js.map"
+    ],
+    "asarUnpack": [
+      "node_modules/tiktoken/**/*"
+    ],
+    "mac": {
+      "icon": "icon.icns"
+    },
+    "win": {
+      "icon": "icon.ico"
+    },
+    "linux": {
+      "icon": "icon.png"
+    }
+  }
+}

@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <!-- Background radial gradient -->
+    <radialGradient id="bgRadial" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#090014" />
+      <stop offset="60%" stop-color="#120028" />
+      <stop offset="100%" stop-color="#000000" />
+    </radialGradient>
+
+    <!-- Pulsing glow filter for shapes -->
+    <filter id="pulseGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="BLUR" />
+      <feColorMatrix in="BLUR" type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 20 -10" result="GLOW" />
+      <feMerge>
+        <feMergeNode in="GLOW" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Linear gradient for streak lines -->
+    <linearGradient id="streakGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00FFCC" />
+      <stop offset="50%" stop-color="#FF00FF" />
+      <stop offset="100%" stop-color="#00CCFF" />
+    </linearGradient>
+
+    <!-- Gradient for “P” fill -->
+    <linearGradient id="pGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFF00" />
+      <stop offset="50%" stop-color="#FFAA00" />
+      <stop offset="100%" stop-color="#FF0000" />
+    </linearGradient>
+
+    <!-- Clipping mask for icon boundary -->
+    <clipPath id="clipMask">
+      <rect x="0" y="0" width="100" height="100" rx="20" ry="20" />
+    </clipPath>
+  </defs>
+
+  <!-- Rounded-corner dark background -->
+  <rect width="100" height="100" rx="20" ry="20" fill="url(#bgRadial)" />
+
+  <!-- Concentric neon circles -->
+  <g clip-path="url(#clipMask)" filter="url(#pulseGlow)" opacity="0.6">
+    <circle cx="50" cy="50" r="40" stroke="#FF00FF" stroke-width="1.5" fill="none" />
+    <circle cx="50" cy="50" r="30" stroke="#00FFCC" stroke-width="1.5" fill="none" />
+    <circle cx="50" cy="50" r="20" stroke="#00CCFF" stroke-width="1.5" fill="none" />
+  </g>
+
+  <!-- Crisscross neon streaks -->
+  <g clip-path="url(#clipMask)" filter="url(#pulseGlow)" opacity="0.4">
+    <line x1="-10" y1="50" x2="110" y2="50" stroke="url(#streakGrad)" stroke-width="2" />
+    <line x1="50" y1="-10" x2="50" y2="110" stroke="url(#streakGrad)" stroke-width="2" />
+    <line x1="-10" y1="10" x2="110" y2="90" stroke="url(#streakGrad)" stroke-width="3" />
+    <line x1="-10" y1="90" x2="110" y2="10" stroke="url(#streakGrad)" stroke-width="3" />
+  </g>
+
+  <!-- Random neon triangles -->
+  <g clip-path="url(#clipMask)" filter="url(#pulseGlow)" opacity="0.5">
+    <polygon points="10,80 25,65 30,85" fill="#FF0080" />
+    <polygon points="70,15 85,25 60,30" fill="#00FFCC" />
+    <polygon points="15,20 35,15 25,40" fill="#00CCFF" />
+    <polygon points="80,80 95,60 65,70" fill="#FF00FF" />
+  </g>
+
+  <!-- Central “P” with thick black outline and bold glow -->
+  <g clip-path="url(#clipMask)">
+    <!-- Black outline for P -->
+    <text
+      x="53"
+      y="50"
+      text-anchor="middle"
+      dominant-baseline="central"
+      fill="none"
+      stroke="#000000"
+      stroke-width="6"
+      stroke-linejoin="round"
+      font-family="Helvetica, Arial, sans-serif"
+      font-size="80"
+      font-weight="900">
+      P
+    </text>
+    <!-- Inner gradient P -->
+    <text
+      x="53"
+      y="50"
+      text-anchor="middle"
+      dominant-baseline="central"
+      fill="url(#pGradient)"
+      font-family="Helvetica, Arial, sans-serif"
+      font-size="80"
+      font-weight="900"
+      filter="url(#pulseGlow)">
+      P
+    </text>
+  </g>
+
+  <!-- Random neon pixel noise -->
+  <g clip-path="url(#clipMask)" opacity="0.3">
+    <rect x="5" y="10" width="2" height="2" fill="#FF00FF" />
+    <rect x="20" y="25" width="3" height="3" fill="#00FFCC" />
+    <rect x="40" y="18" width="2" height="2" fill="#00CCFF" />
+    <rect x="55" y="70" width="3" height="3" fill="#FF0080" />
+    <rect x="68" y="40" width="2" height="2" fill="#00FFCC" />
+    <rect x="82" y="55" width="3" height="3" fill="#FF00FF" />
+    <rect x="30" y="60" width="2" height="2" fill="#FFFF00" />
+  </g>
+</svg>

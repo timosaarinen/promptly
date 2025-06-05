@@ -1,0 +1,5 @@
+// tsconfig.json
+{
+  "files": [],
+  "references": [{ "path": "./electron" }, { "path": "./src" }, { "path": "./shared" }]
+}

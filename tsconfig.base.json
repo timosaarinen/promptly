@@ -1,0 +1,11 @@
+// tsconfig.base.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["shared/*"],
+      "@electron/*": ["electron/*"],
+      "@/*": ["src/*"]
+    }
+  }
+}
