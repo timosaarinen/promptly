@@ -1,5 +1,7 @@
 # Promptly - Preview Version 0.2.0
 
+![Promptly v0.2.0 Preview](docs/images/screenshot-2025-06-05.png)
+
 **"Context is king. Own the context."**
 
 This is a **preview version (0.2.0)** of an offline-friendly, cross-platform, Git-native desktop tool designed to help developers craft detailed, context-aware prompts for Large Language Models (LLMs) using files from local codebases. It also supports applying file modifications from LLMs back into local files.
