@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   rootPathAtom,
+  selectedFileEntriesAtom,
   fileSystemChangeIndicatorAtom,
   appFocusRefreshTriggerAtom,
   logMessagesAtom,
@@ -13,6 +14,7 @@ import { useHelpViewer } from '@/hooks/useHelpViewer';
 
 export default function NotificationListeners() {
   const setRootPath = useSetAtom(rootPathAtom);
+  const setSelectedFileEntries = useSetAtom(selectedFileEntriesAtom);
   const setFsChangeIndicator = useSetAtom(fileSystemChangeIndicatorAtom);
   const setAppFocusRefreshTrigger = useSetAtom(appFocusRefreshTriggerAtom);
   const setLogMessages = useSetAtom(logMessagesAtom);
@@ -48,7 +50,7 @@ export default function NotificationListeners() {
     const cleanupGlobalRootPathUpdated = electronApi.onGlobalRootPathUpdated((event: GlobalRootPathUpdatedEvent) => {
       setLogMessages(`Root path changed by main process to: ${event.newRootPath}`);
       setRootPath(event.newRootPath);
-      // The FileExplorer's useEffect listening to rootPathAtom will handle UI refresh and other state resets.
+      setSelectedFileEntries(new Map());
     });
 
     return () => {
@@ -59,7 +61,7 @@ export default function NotificationListeners() {
       cleanupShowHelpContent();
       cleanupGlobalRootPathUpdated();
     };
-  }, [setLogMessages, setFsChangeIndicator, setAppFocusRefreshTrigger, showHelp, setRootPath]);
+  }, [setLogMessages, setFsChangeIndicator, setAppFocusRefreshTrigger, showHelp, setRootPath, setSelectedFileEntries]);
 
   return null;
 }
