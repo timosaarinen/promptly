@@ -161,18 +161,12 @@ const GitStatusPanel: React.FC = () => {
       const promptPrefix =
         'The following files has been modified. Please consider this their current state for any further actions or analysis:\n\n';
 
-      await copyFilesAsPromptToClipboard(
-        rootPath,
-        prefixedModifiedFilePaths,
-        promptPrefix,
-        showToast,
-        {
-          includeGitDiff: false,
-          includeSummary: false,
-          includeDirectoryStructure: false,
-          includeGitCommitHash: false,
-        }
-      );
+      await copyFilesAsPromptToClipboard(rootPath, prefixedModifiedFilePaths, promptPrefix, showToast, {
+        includeGitDiff: false,
+        includeSummary: false,
+        includeDirectoryStructure: false,
+        includeGitCommitHash: false,
+      });
     } catch (err) {
       console.error('Error in handleCopyModifiedFiles, potentially caught by utility:', err);
       if (!String(getErrorMessage(err)).startsWith('Error copying files context:')) {

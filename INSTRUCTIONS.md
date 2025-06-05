@@ -59,9 +59,9 @@ Adherence to these conventions ensures consistency and maintainability across th
 - **Renderer Process**: Code is in `src/`. A React application built with Vite.
 - **Preload Script**: `electron/preload.ts` securely exposes IPC functionalities to the renderer via `contextBridge`.
 - **Build Configuration**:
-    - Shared TypeScript (`shared/`) is compiled first.
-    - Electron main process (`electron/main.ts`) and preload script (`electron/preload.ts`) TypeScript sources are bundled and transpiled to CommonJS JavaScript (`dist/main/`) using `esbuild`.
-    - `package.electron.json` is copied to `dist/main/package.json` to ensure the built main process code runs with `"type": "commonjs"`. The root `package.json` uses `"type": "module"`.
+  - Shared TypeScript (`shared/`) is compiled first.
+  - Electron main process (`electron/main.ts`) and preload script (`electron/preload.ts`) TypeScript sources are bundled and transpiled to CommonJS JavaScript (`dist/main/`) using `esbuild`.
+  - `package.electron.json` is copied to `dist/main/package.json` to ensure the built main process code runs with `"type": "commonjs"`. The root `package.json` uses `"type": "module"`.
 - **TypeScript Configuration**: Uses `tsconfig.base.json` for common settings like path aliases. `electron/tsconfig.json` and `src/tsconfig.json` extend this for their specific needs, building composite projects.
 
 ## Development Workflow
@@ -189,4 +189,3 @@ Adherence to these conventions ensures consistency and maintainability across th
 - **Renderer Process**: Use Chrome DevTools (opened automatically in dev mode, or via `Ctrl+Shift+I`/`Cmd+Option+I`).
 - Logging is used throughout the Electron main process. Check the terminal output where you ran `npm run dev`.
 - Various `LOG_..._DETAILS` flags exist in some modules (e.g., `LOG_PARSING_DETAILS` in `llmResponseParser.ts`) that can be temporarily set to `true` for verbose debugging.
-  
