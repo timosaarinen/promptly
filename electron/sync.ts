@@ -8,6 +8,16 @@ import { setupAppMenu } from './appMenu';
 let isMainProcessReady = false;
 let readyResolvers: Array<() => void> = [];
 let currentRootPath: string | null = null;
+let cachedShellEnv: NodeJS.ProcessEnv = {};
+
+export function getShellEnv(): NodeJS.ProcessEnv {
+  return cachedShellEnv;
+}
+
+export function setShellEnv(env: NodeJS.ProcessEnv): void {
+  console.log('[Sync] Caching resolved shell environment.');
+  cachedShellEnv = env;
+}
 
 export function signalMainProcessReady(): void {
   if (isMainProcessReady) return;
