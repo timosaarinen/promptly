@@ -2,6 +2,7 @@
 import { exec } from 'node:child_process';
 import path from 'node:path';
 import { getErrorMessage, toPosixPath } from './utils';
+import { getShellEnv } from './sync';
 import type { GitFileStatus } from '@shared/electron-api';
 
 const VERBOSE_LOGGING = false;
@@ -22,7 +23,8 @@ async function runGitCommand(cwd: string, command: string, trim = true): Promise
   return new Promise((resolve, reject) => {
     // Ensure commands are executed with git prefix
     const fullCommand = command.startsWith('git ') ? command : `git ${command}`;
-    exec(fullCommand, { cwd }, (error, stdout, stderr) => {
+    const shellEnv = getShellEnv();
+    exec(fullCommand, { cwd, env: shellEnv }, (error, stdout, stderr) => {
       if (error) {
         const errorMessage = (trim ? stderr.trim() : stderr) || error.message;
         return reject(new Error(`Git command "${command}" failed: ${errorMessage}`));
@@ -36,7 +38,8 @@ async function runGitCommand(cwd: string, command: string, trim = true): Promise
 async function runGitCommandWithExitCode(cwd: string, command: string, trim = true): Promise<GitCommandResult> {
   return new Promise((resolve) => {
     const fullCommand = command.startsWith('git ') ? command : `git ${command}`;
-    exec(fullCommand, { cwd }, (error, stdout, stderr) => {
+    const shellEnv = getShellEnv();
+    exec(fullCommand, { cwd, env: shellEnv }, (error, stdout, stderr) => {
       resolve({
         stdout: trim ? stdout.trim() : stdout,
         stderr: trim ? stderr.trim() : stderr,

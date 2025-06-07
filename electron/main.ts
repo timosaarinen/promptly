@@ -5,9 +5,9 @@ import { VITE_DEV_SERVER_URL, APP_TITLE } from './config';
 import { createWindow, setupAppEventHandlers } from './windowManager';
 import { registerIpcHandlers } from './ipcHandlers';
 import { waitForVite } from './devUtils';
-import { getErrorMessage } from './utils';
+import { getErrorMessage, getShellEnvironment } from './utils';
 import * as settingsManager from './settingsManager';
-import { onNewRootPath, signalMainProcessReady } from './sync';
+import { onNewRootPath, signalMainProcessReady, setShellEnv } from './sync';
 
 console.log('Electron main.ts starting...');
 console.log('VITE_DEV_SERVER_URL from config:', VITE_DEV_SERVER_URL);
@@ -33,6 +33,16 @@ async function initializeApp() {
   }
 
   await app.whenReady();
+
+  try {
+    const shellEnv = await getShellEnvironment();
+    setShellEnv(shellEnv);
+    console.log('[Main] Resolved and cached user shell environment.');
+  } catch (e) {
+    const errorMsg = getErrorMessage(e);
+    console.error(`[Main] Could not resolve shell environment: ${errorMsg}. Falling back to process.env.`);
+    setShellEnv(process.env);
+  }
 
   registerIpcHandlers();
   console.log('[Main] registerIpcHandlers() called.');

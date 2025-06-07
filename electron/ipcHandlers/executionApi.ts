@@ -2,7 +2,7 @@
 import { ipcMain } from 'electron';
 import { spawn, ChildProcessWithoutNullStreams } from 'node:child_process';
 import { getErrorMessage } from '../utils';
-import { getCurrentRootPath } from '../sync';
+import { getCurrentRootPath, getShellEnv } from '../sync';
 import { TerminalOutputEvent, TerminalCommandExitEvent } from '@shared/electron-api';
 import { getWindowFromEvent } from './ipcUtils';
 
@@ -23,10 +23,12 @@ export function registerExecutionApiHandlers(): void {
     }
 
     try {
+      const shellEnv = getShellEnv();
       const child: ChildProcessWithoutNullStreams = spawn(commandToRun, [], {
         cwd: rootPath,
         shell: true,
         detached: false,
+        env: shellEnv,
       });
 
       child.stdout.on('data', (data: Buffer) => {
