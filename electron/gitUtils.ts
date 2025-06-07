@@ -122,7 +122,10 @@ export async function getGitStatus(directoryPath: string): Promise<GitFileStatus
     DEBUG(`git status --porcelain=v1 output:\n${output}`);
 
     const files: GitFileStatus[] = [];
-    const lines = output.split('\n');
+    // Split output by newline and filter out any empty strings.
+    // This prevents processing a blank line which can occur if the git command's
+    // output has a trailing newline.
+    const lines = output.split('\n').filter(Boolean);
 
     for (const line of lines) {
       DEBUG(`Raw line: "${line}"`);
