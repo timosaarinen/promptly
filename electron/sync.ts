@@ -58,6 +58,11 @@ export async function onClose() {
   await closeWatcher();
 }
 
+export function clearCurrentRootPath(): void {
+  console.log('[Sync] Clearing current root path.');
+  currentRootPath = null;
+}
+
 export function getCurrentRootPath(): string | null {
   return currentRootPath;
 }

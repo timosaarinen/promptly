@@ -8,6 +8,7 @@ import { waitForVite } from './devUtils';
 import { getErrorMessage, getShellEnvironment } from './utils';
 import * as settingsManager from './settingsManager';
 import { onNewRootPath, signalMainProcessReady, setShellEnv } from './sync';
+import { setupAppMenu } from './appMenu';
 
 console.log('Electron main.ts starting...');
 console.log('VITE_DEV_SERVER_URL from config:', VITE_DEV_SERVER_URL);
@@ -49,6 +50,7 @@ async function initializeApp() {
 
   try {
     const mainWindow = createWindow();
+    setupAppMenu(mainWindow);
     setupAppEventHandlers();
     const initialRootPath = settingsManager.getLastOpenedRootPath();
     console.log(`[Main Init] Attempting to load last opened root path. Found: "${initialRootPath}"`);

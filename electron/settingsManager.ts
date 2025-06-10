@@ -59,7 +59,11 @@ export function getLastOpenedRootPath(): string | null {
 }
 
 export function setLastOpenedRootPath(path: string | null): void {
-  path ? setSetting('lastOpenedRootPath', path) : deleteSetting('lastOpenedRootPath');
+  if (path) {
+    setSetting('lastOpenedRootPath', path);
+  } else {
+    deleteSetting('lastOpenedRootPath');
+  }
 }
 
 export function deleteLastOpenedRootPath(): void {
