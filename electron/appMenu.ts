@@ -1,12 +1,49 @@
 // electron/appMenu.ts
-import { app, BrowserWindow, Menu, shell, MenuItemConstructorOptions, dialog } from 'electron';
+import { app, BrowserWindow, Menu, shell, MenuItemConstructorOptions, dialog, OpenDialogOptions } from 'electron';
 import { getErrorMessage } from './utils';
 import * as settingsManager from './settingsManager';
 import { onNewRootPath } from './sync';
+import { createWindow } from './windowManager';
 
-export function setupAppMenu(mainWindow: BrowserWindow) {
-  if (!mainWindow || mainWindow.isDestroyed()) {
-    console.warn('[Menu] Cannot setup application menu: mainWindow is null or destroyed.');
+function getAnyAliveWindow(): BrowserWindow | undefined {
+  return BrowserWindow.getAllWindows().find(w => !w.isDestroyed());
+}
+
+async function openPath(newPath: string) {
+  try {
+    const win = getAnyAliveWindow() ?? createWindow();
+    await onNewRootPath(win, newPath);
+    if (win.isMinimized()) win.restore();
+    win.focus();
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    console.error(`[Menu] Error opening path ${newPath}: ${errorMsg}`);
+    dialog.showErrorBox('Error Opening Path', `Could not open ${newPath}:\n${errorMsg}`);
+  }
+}
+
+async function openFolder() {
+  try {
+    const options: OpenDialogOptions = { properties: ['openDirectory'] };
+    const parentWindow = getAnyAliveWindow();
+
+    const result = parentWindow
+      ? await dialog.showOpenDialog(parentWindow, options)
+      : await dialog.showOpenDialog(options);
+
+    if (!result.canceled && result.filePaths.length > 0) {
+      await openPath(result.filePaths[0]);
+    }
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    console.error(`[Menu] Error in Open Folder dialog: ${errorMsg}`);
+    dialog.showErrorBox('Error Opening Folder', `An error occurred: ${errorMsg}`);
+  }
+}
+
+export function setupAppMenu(mainWindow?: BrowserWindow) {
+  if (mainWindow && mainWindow.isDestroyed()) {
+    console.warn('[Menu] Cannot setup application menu: mainWindow is destroyed.');
     return;
   }
 
@@ -18,15 +55,7 @@ export function setupAppMenu(mainWindow: BrowserWindow) {
       ? recentPaths.map(
           (recentPath): MenuItemConstructorOptions => ({
             label: recentPath,
-            click: async () => {
-              try {
-                await onNewRootPath(mainWindow, recentPath);
-              } catch (error) {
-                const errorMsg = getErrorMessage(error);
-                console.error(`[Menu] Error opening recent path ${recentPath}: ${errorMsg}`);
-                dialog.showErrorBox('Error Opening Recent Folder', `Could not open ${recentPath}:\n${errorMsg}`);
-              }
-            },
+            click: () => openPath(recentPath),
           })
         )
       : [{ label: 'No Recent Items', enabled: false }];
@@ -58,22 +87,7 @@ export function setupAppMenu(mainWindow: BrowserWindow) {
         {
           label: 'Open Folder...',
           accelerator: 'CmdOrCtrl+O',
-          click: async () => {
-            if (mainWindow && !mainWindow.isDestroyed()) {
-              try {
-                const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-                  properties: ['openDirectory'],
-                });
-                if (!canceled && filePaths.length > 0) {
-                  await onNewRootPath(mainWindow, filePaths[0]);
-                }
-              } catch (error) {
-                const errorMsg = getErrorMessage(error);
-                console.error(`[Menu] Error in Open Folder dialog: ${errorMsg}`);
-                dialog.showErrorBox('Error Opening Folder', `An error occurred: ${errorMsg}`);
-              }
-            }
-          },
+          click: () => openFolder(),
         },
         {
           label: 'Open Recent',
@@ -111,7 +125,7 @@ export function setupAppMenu(mainWindow: BrowserWindow) {
     {
       label: 'View',
       submenu: [
-        // TODO: remove developer tools when in production version
+        // TODO: we could later remove developer tools from prod, but useful for debugging
         { role: 'reload' },
         { role: 'forceReload' },
         { role: 'toggleDevTools' },

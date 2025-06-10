@@ -2,9 +2,12 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog } from 'electron';
 import path from 'node:path';
 import { existsSync } from 'node:fs';
+import fs from 'node:fs/promises';
 import { APP_TITLE, VITE_DEV_SERVER_URL, publicPath, distRendererPath } from './config';
-import { onClose } from './sync';
+import { onClose, onNewRootPath, clearCurrentRootPath } from './sync';
 import { setupAppMenu } from './appMenu';
+import * as settingsManager from './settingsManager';
+import { getErrorMessage } from './utils';
 
 export function createWindow(): BrowserWindow {
   console.log('createWindow() called.');
@@ -24,8 +27,6 @@ export function createWindow(): BrowserWindow {
 
   const mainWindow = new BrowserWindow(browserWindowOptions);
   console.log('BrowserWindow created.');
-
-  setupAppMenu(mainWindow); //mainWindow.setMenu(null);
 
   mainWindow.on('closed', async () => {
     onClose();
@@ -90,16 +91,32 @@ export function createWindow(): BrowserWindow {
 export function setupAppEventHandlers(): void {
   app.on('window-all-closed', () => {
     console.log('All windows closed.');
-    if (process.platform !== 'darwin') {
+    if (process.platform === 'darwin') {
+      clearCurrentRootPath();
+      setupAppMenu();
+    } else {
       app.quit();
     }
   });
 
-  app.on('activate', () => {
+  app.on('activate', async () => {
     const allWindows = BrowserWindow.getAllWindows();
     if (allWindows.length === 0) {
-      // on MacOS, if user has closed the window, app still runs
-      createWindow();
+      const win = createWindow();
+      // On macOS, re-opening the app with no windows should restore the last session.
+      const lastPath = settingsManager.getLastOpenedRootPath();
+      if (lastPath) {
+        try {
+          const stats = await fs.stat(lastPath);
+          if (!stats.isDirectory()) throw new Error('Not a directory.');
+          await onNewRootPath(win, lastPath);
+        } catch (error) {
+          console.warn(
+            `[WindowManager] Could not reopen last path on activate: ${lastPath}. Error: ${getErrorMessage(error)}`
+          );
+          settingsManager.deleteLastOpenedRootPath();
+        }
+      }
     } else {
       const win = allWindows[0];
       if (win && !win.isDestroyed()) {
