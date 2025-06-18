@@ -35,6 +35,7 @@ import ResponseInputArea from './ResponseInputArea';
 import ResponseBlock from './ResponseBlock';
 import { electronApi } from '@shared/electron-api';
 import { normalizeLineFeeds } from '@/utils/pathUtils';
+import { normalizeLineFeeds } from '@/utils/pathUtils';
 
 export default function ApplyPanel() {
   const [activeInput, setActiveInput] = useAtom(activeLlmResponseInputAtom);
@@ -334,7 +335,7 @@ export default function ApplyPanel() {
             applyStatus: ApplyItemStatus.APPLIED_SUCCESS,
           };
         } else if (changeToApply.type === 'create' && changeToApply.path) {
-          const currentContent = (changeToApply as FileWriteChange).content;
+          const currentContent = normalizeLineFeeds((changeToApply as FileWriteChange).content);
           await electronApi.writeFile(changeToApply.path!, currentContent);
           showToast(`Write: ${changeToApply.path}`, 'success');
           return {
