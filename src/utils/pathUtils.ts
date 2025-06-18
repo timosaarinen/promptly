@@ -1,9 +1,9 @@
 // src/utils/pathUtils.ts
 import path from 'path';
 
-/* CRLF -> LF */
+/* CRLF/CR -> LF */
 export function normalizeLineFeeds(text: string) {
-  return text.replace(/\r\n/g, '\n');
+  return text.replace(/\r\n|\r/g, '\n');
 }
 
 /** Convert backslashes to POSIX-style (forward) slashes */

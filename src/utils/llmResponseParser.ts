@@ -1,6 +1,6 @@
 // src/utils/llmResponseParser.ts
 import { ParsedChange } from '@/store/parseAtoms';
-import { toPosixPath } from '@/utils/pathUtils';
+import { toPosixPath, normalizeLineFeeds } from '@/utils/pathUtils';
 import { parseSearchReplaceBlock } from '@/utils/diffUtils';
 
 const LOG_PARSING_DETAILS = true;
@@ -211,13 +211,13 @@ function mapTagToParsedChange(tagInfo: TagInfo): ParsedChange | null {
         DEBUG(`<file-write> tag missing 'path' attribute.`);
         return null;
       }
-      // Remove a single leading newline (CRLF or LF) if present.
+      // Remove a single leading newline (CRLF or LF) if present, then normalize all line endings to LF.
       // This handles the LLM's tendency to start content on the line *after* the tag.
       return {
         type: 'create',
         path,
         reason,
-        content: (content || '').replace(/^\r?\n/, ''),
+        content: normalizeLineFeeds((content || '').replace(/^\r?\n/, '')),
       };
     case 'file-replace-block': {
       if (!path) {
